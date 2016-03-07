@@ -3,19 +3,22 @@ from spell import Spell
 
 
 class Hero:
-    def __init__(self, name="Bron", title="Dragonslayer", health=100, mana=100, mana_regeneration_rate=2):
+    def __init__(self, name, title, health, mana, mana_regeneration_rate):
         self._name = name
         self._title = title
         self._health = health
         self._mana = mana
-        self.mana_regeneration_rate = mana_regeneration_rate
+        self._mana_regeneration_rate = mana_regeneration_rate
+        self._max_health = health
+        self._max_mana = mana
+        self._weapon_equipped = None
+        self._spell_learned = None
 
-    def __str__(self):
-        message = "Your Hero is {} the {} and you have: {} health, {} mana and his mana regeneration rate is {}."
-        return message.format(self._name, self._title, self._health, self._mana, self.mana_regeneration_rate)
+    def is_alive(self):
+        return self._health > 0
 
-    def __repr__(self):
-        return self.__str__()
+    def can_cast(self):
+        return self._spell_learned and self._mana >= self._spell_learned.get_mana_cost()
 
     def known_as(self):
         return "{} the {}".format(self._name, self._title)
@@ -26,63 +29,56 @@ class Hero:
     def get_mana(self):
         return self._mana
 
-    def is_alive(self):
-        return self.get_health() > 0
-
-    def can_cast(self):
-        return self.can_cast > 0
-
-    def take_damage(self, damage_points):
-        if self.get_health() <= damage_points:
+    def take_damage(self, damage_taken):
+        if damage_taken > self._health:
             self._health = 0
         else:
-            self._health = self._health - damage_points
+            self._health -= damage_taken
 
     def take_healing(self, healing_points):
-        if self.is_alive():
-            if self.get_health() + healing_points >= 100:
-                self._health = 100
-            else:
-                self._health = self.get_health() + healing_points
-            return True
-        else:
+        if self._health <= 0:
             return False
+        if self._health + healing_points > self._max_health:
+            self._health = self._max_health
+            return True
+        self._health += healing_points
+        return True
 
     def take_mana(self, mana_points):
-        if self.get_mana() + mana_points <= 0:
-            return False
-        elif 0 < self.get_mana() + mana_points and self.get_mana() + mana_points <= 100:
-            self._mana = self.get_mana() + mana_points
-            return True
+        if self._mana + mana_points > self._max_mana:
+            self._mana = self._max_mana
         else:
-            self._mana = 100
-            return True
+            self._mana += mana_points
 
-    def equip(self, weapon):
-        self.weapon = weapon
+    def equip_weapon(self, weapon):
+        self._weapon_equipped = weapon
 
-    def learn(self, spell):
-        self.spell = spell
+    def learn_spell(self, spell):
+        self._spell_learned = spell
 
-#golqm problem!!!!!!!!!!!!!!!
-# tuk ne trqbva da podavam obekt a string
-    def attack(self, weapon):
-        if atack_with == 'weapon':
-            return weapon.get_damage()
-        elif atack_with == 'spell':
-            self._mana -= spell.get_mana_cost()
-            return spell.get_damage()
-        else:
+    def attack(self, ws="weapon"):
+        if ws == "weapon":
+            if self._weapon_equipped is None:
+                print("No weapon equiped")
+                return 0
+            return self._weapon_equipped.get_damage()
+        if ws == "spell":
+            if self._spell_learned is None:
+                print("No spell learned")
+                return 0
+            if self.can_cast():
+                self._mana -= self._spell_learned.get_mana_cost()
+                return self._spell_learned.get_damage()
             return 0
 
-'''
-h = Hero(name="Bron", title="Dragonslayer", health=100, mana=100, mana_regeneration_rate=2)
-print(h.take_damage(20))
-print(h.get_health())
-print(h.take_mana(-30))
-print(h.get_mana())
-objw = Weapon(name="The Axe of Destiny", damage=50)
-objs = Spell(name="Fireball", damage=500, mana_cost=50, cast_range=2)
-print(h.attack(objw))
-print(h.attack(objs))
-'''
+
+# h = Hero(name="Bron", title="Dragonslayer", health=100, mana=100, mana_regeneration_rate=2)
+# print(h.is_alive())
+# print(h.take_damage(20))
+# print(h.get_health())
+# print(h.take_mana(-30))
+# print(h.get_mana())
+# objw = Weapon(name="The Axe of Destiny", damage=50)
+# objs = Spell(name="Fireball", damage=500, mana_cost=50, cast_range=2)
+# print(h.attack(objw))
+# print(h.attack(objs))

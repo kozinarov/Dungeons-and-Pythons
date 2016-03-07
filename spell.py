@@ -8,11 +8,10 @@ class Spell:
     def enough_mana(self, mana_available):
         if mana_available < self._mana_cost:
             raise ValueError("Not enough mana")
-    
+
     def get_spell_name(self):
         return self._name
 
-    # tuk v bitkata shte go podam i shte vidi dali ima protivnik v obxvada na magiqta ako ima protivnik shte izvikam cast range funkciqta
     def get_cast_range(self):
         return self._cast_range
 
@@ -21,4 +20,3 @@ class Spell:
 
     def get_damage(self):
         return self._damage
-

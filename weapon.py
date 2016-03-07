@@ -3,11 +3,8 @@ class Weapon:
         self._name = name
         self._damage = damage
 
-
-    def get_weapon_name(self):
-        return self._name
-
-
     def get_damage(self):
-        return self._damage
+        return self.damage
 
+    def get_name(self):
+        return self._name
